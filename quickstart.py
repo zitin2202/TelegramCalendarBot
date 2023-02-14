@@ -14,7 +14,8 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 #Создание ссылки авторизации
 async def auth_url(chat_id,user_id):
     flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-    flow.redirect_uri = "http://127.0.0.1"
+    flow.redirect_uri = flow._OOB_REDIRECT_URI
+
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
@@ -27,7 +28,7 @@ async def auth(chat_id,code,user_id):
     try:
         flow = InstalledAppFlow.from_client_secrets_file(
             'credentials.json', SCOPES)
-        flow.redirect_uri = "http://127.0.0.1"
+        flow.redirect_uri = flow._OOB_REDIRECT_URI
         flow.fetch_token(code=code)
         cur.execute('INSERT INTO users VALUES(?,?)',(chat_id,flow.credentials.to_json()))
         base.commit()
